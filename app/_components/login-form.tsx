@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2, TwitchIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -130,7 +130,7 @@ export function LoginForm() {
           className="w-full bg-[#9146FF] text-white hover:bg-[#7d3bdf] hover:text-white"
           onClick={async () => { }}
         >
-
+          <TwitchIcon className="w-5 h-5"/>
         </Button>
       </form>
     </Form>
