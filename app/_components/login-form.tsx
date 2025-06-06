@@ -35,33 +35,25 @@ export function LoginForm() {
 async function onSubmit(formData: LoginFormValues) {
   setIsLoading(true);
   try {
-    const { data, error } = await authClient.signIn.email(
-      {
-        email: formData.email,
-        password: formData.password,
-        fetchOptions: {
-          credentials: "include",
-        },
-      },
-      {
-        onRequest: () => {
-          console.log("Iniciando login...");
-        },
-        onSuccess: () => {
-          console.log("Login realizado com sucesso:", data);
+    console.log("Iniciando login...");
 
-          router.replace("/dashboard");
-        },
-        onError: () => {
-          console.error("Erro no login:");
-          alert("Credenciais inválidas ou erro no servidor.");
-        },
-      }
-    );
+    const { data, error } = await authClient.signIn.email({
+      email: formData.email,
+      password: formData.password,
+      fetchOptions: {
+        credentials: "include",
+      },
+    });
 
     if (error) {
-      console.error("Erro direto:", error);
-      alert(`Erro: ${error.message}`);
+      console.error("Erro no login:", error);
+      alert(`Erro: ${error.message || "Credenciais inválidas"}`);
+      return;
+    }
+
+    if (data) {
+      console.log("Login realizado com sucesso:", data);
+      router.replace("/dashboard");
     }
   } catch (err) {
     console.error("Erro não capturado:", err);

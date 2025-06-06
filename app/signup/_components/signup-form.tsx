@@ -45,34 +45,26 @@ export function SignupForm() {
   async function onSubmit(formData: SignupFormValues) {
     setIsLoading(true);
     try {
-      const { data, error } = await authClient.signUp.email(
-        {
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          callbackURL: "/dashboard",
-          fetchOptions: {
-            credentials: "include",
-          },
+      console.log("Iniciando cadastro...");
+
+      const { data, error } = await authClient.signUp.email({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        fetchOptions: {
+          credentials: "include",
         },
-        {
-          onRequest: () => {
-            console.log("Iniciando cadastro...");
-          },
-          onSuccess: () => {
-            console.log("Cadastro realizado com sucesso:", data);
-            router.replace("/dashboard");
-          },
-          onError: () => {
-            console.error("Erro no cadastro:");
-            alert("Erro ao criar conta. Verifique os dados e tente novamente.");
-          },
-        }
-      );
+      });
 
       if (error) {
-        console.error("Erro direto:", error);
-        alert(`Erro: ${error.message}`);
+        console.error("Erro no cadastro:", error);
+        alert(`Erro: ${error.message || "Erro ao criar conta"}`);
+        return;
+      }
+
+      if (data) {
+        console.log("Cadastro realizado com sucesso:", data);
+        router.replace("/dashboard");
       }
     } catch (err) {
       console.error("Erro não capturado:", err);
