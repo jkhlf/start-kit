@@ -43,13 +43,43 @@ export function SignupForm() {
   })
 
   async function onSubmit(formData: SignupFormValues) {
-    const {data, error} = await authClient.signUp.email({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      callbackURL: "/dashboard"
-    },)
+    setIsLoading(true);
+    try {
+      const { data, error } = await authClient.signUp.email(
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          callbackURL: "/dashboard",
+          fetchOptions: {
+            credentials: "include",
+          },
+        },
+        {
+          onRequest: () => {
+            console.log("Iniciando cadastro...");
+          },
+          onSuccess: () => {
+            console.log("Cadastro realizado com sucesso:", data);
+            router.replace("/dashboard");
+          },
+          onError: () => {
+            console.error("Erro no cadastro:");
+            alert("Erro ao criar conta. Verifique os dados e tente novamente.");
+          },
+        }
+      );
 
+      if (error) {
+        console.error("Erro direto:", error);
+        alert(`Erro: ${error.message}`);
+      }
+    } catch (err) {
+      console.error("Erro não capturado:", err);
+      alert("Erro inesperado ao criar conta");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -156,7 +186,7 @@ export function SignupForm() {
         />
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {form.formState.isSubmitting ? (
+          {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Cadastrando...
