@@ -33,22 +33,40 @@ export function LoginForm() {
   })
 
   async function onSubmit(formData: LoginFormValues) {
-    const {data, error} = await authClient.signIn.email({
-      email: formData.email,
-      password: formData.password,
-    },{
-       onRequest: (ctx) => {
+    setIsLoading(true) // Definir loading antes da requisição
 
-      },
-      onSuccess: (ctx) => {
-        router.replace("/dashboard")
-      },
-      onError: (ctx) => {
-        alert("erro ai criar conta")
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email: formData.email,
+        password: formData.password,
+        fetchOptions: {
+          credentials: 'include',
+        }
+      }, {
+        onRequest: () => {
+          console.log("Iniciando login...")
+        },
+        onSuccess: () => {
+          console.log("Login realizado com sucesso:", data)
+          router.replace("/dashboard")
+        },
+        onError: () => {
+          console.error("Erro no login:")
+          alert(`Erro ao fazer login: ${ 'Credenciais inválidas'}`)
+        }
+      })
+
+      // Verificar se houve erro direto
+      if (error) {
+        console.error("Erro direto:", error)
+        alert(`Erro: ${error.message}`)
       }
+    } catch (err) {
+      console.error("Erro não capturado:", err)
+      alert("Erro inesperado ao fazer login")
+    } finally {
+      setIsLoading(false)
     }
-  )
-
   }
 
   return (
@@ -104,8 +122,8 @@ export function LoginForm() {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? (
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Entrando...
@@ -128,7 +146,10 @@ export function LoginForm() {
           type="button"
           variant="outline"
           className="w-full bg-[#9146FF] text-white hover:bg-[#7d3bdf] hover:text-white"
-          onClick={async () => { }}
+          onClick={async () => {
+            // Implementar login com Twitch se necessário
+            console.log("Login com Twitch - em desenvolvimento")
+          }}
         >
           <TwitchIcon className="w-5 h-5"/>
         </Button>
