@@ -32,42 +32,44 @@ export function LoginForm() {
     },
   })
 
-  async function onSubmit(formData: LoginFormValues) {
-    setIsLoading(true) // Definir loading antes da requisição
-
-    try {
-      const { data, error } = await authClient.signIn.email({
+async function onSubmit(formData: LoginFormValues) {
+  setIsLoading(true);
+  try {
+    const { data, error } = await authClient.signIn.email(
+      {
         email: formData.email,
         password: formData.password,
         fetchOptions: {
-          credentials: 'include',
-        }
-      }, {
+          credentials: "include",
+        },
+      },
+      {
         onRequest: () => {
-          console.log("Iniciando login...")
+          console.log("Iniciando login...");
         },
         onSuccess: () => {
-          console.log("Login realizado com sucesso:", data)
-          router.replace("/dashboard")
+          console.log("Login realizado com sucesso:", data);
+
+          router.replace("/dashboard");
         },
         onError: () => {
-          console.error("Erro no login:")
-          alert(`Erro ao fazer login: ${ 'Credenciais inválidas'}`)
-        }
-      })
-
-      // Verificar se houve erro direto
-      if (error) {
-        console.error("Erro direto:", error)
-        alert(`Erro: ${error.message}`)
+          console.error("Erro no login:");
+          alert("Credenciais inválidas ou erro no servidor.");
+        },
       }
-    } catch (err) {
-      console.error("Erro não capturado:", err)
-      alert("Erro inesperado ao fazer login")
-    } finally {
-      setIsLoading(false)
+    );
+
+    if (error) {
+      console.error("Erro direto:", error);
+      alert(`Erro: ${error.message}`);
     }
+  } catch (err) {
+    console.error("Erro não capturado:", err);
+    alert("Erro inesperado ao fazer login");
+  } finally {
+    setIsLoading(false);
   }
+}
 
   return (
     <Form {...form}>
